@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥫 Vorratsverwaltung</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overscroll-behavior:none;background:#f9fafb}::-webkit-scrollbar{display:none}.tab{display:none}.tab.active{display:block}.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:flex-end;justify-content:center}.mo.active{display:flex}.mb{background:white;border-radius:24px 24px 0 0;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;animation:su .3s ease}@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}.fade{animation:fi .2s ease}@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.inp{width:100%;border:1.5px solid #e5e7eb;border-radius:12px;padding:11px 14px;font-size:14px;background:white}.inp:focus{outline:none;border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.1)}.sel{width:100%;border:1.5px solid #e5e7eb;border-radius:12px;padding:11px 14px;font-size:14px;background:white}.bg{background:#16a34a;color:white;border:none;border-radius:12px;padding:13px 20px;font-weight:700;font-size:14px;cursor:pointer;width:100%}.bg:hover{background:#15803d}.bw{background:white;color:#374151;border:1.5px solid #e5e7eb;border-radius:12px;padding:13px 20px;font-weight:600;font-size:14px;cursor:pointer;width:100%}.br{background:#fef2f2;color:#dc2626;border:1.5px solid #fecaca;border-radius:12px;padding:13px 20px;font-weight:600;font-size:14px;cursor:pointer;width:100%}.card{background:white;border-radius:16px;border:1px solid #f3f4f6;box-shadow:0 1px 3px rgba(0,0,0,.06)}.ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;cursor:pointer;color:#9ca3af;border:none;background:none}.ni.active{color:#16a34a}.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px}.cg{background:#f0fdf4;color:#16a34a}.cr{background:#fef2f2;color:#dc2626}.cy{background:#fefce8;color:#ca8a04}.co{background:#fff7ed;color:#ea580c}.cb{background:#eff6ff;color:#2563eb}.cgr{background:#f9fafb;color:#6b7280}.fb{white-space:nowrap;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #e5e7eb;background:white;color:#6b7280;cursor:pointer}.fag{background:#16a34a;color:white;border-color:#16a34a}.fab{background:#2563eb;color:white;border-color:#2563eb}#tw{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;width:90%;max-width:360px;pointer-events:none}.ti{background:#111827;color:white;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:8px;animation:fi .3s ease}.lbl{display:block;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}.sc2{border-radius:16px;padding:16px}.scan-area{position:relative;background:#000;border-radius:16px;overflow:hidden;width:100%;aspect-ratio:1;max-height:320px}.scan-area video{width:100%;height:100%;object-fit:cover}.scan-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.scan-box{position:relative;width:220px;height:220px}.scan-box::before,.scan-box::after{content:'';position:absolute;width:40px;height:40px;border-color:#22c55e;border-style:solid}.scan-box::before{top:0;left:0;border-width:4px 0 0 4px}.scan-box::after{top:0;right:0;border-width:4px 4px 0 0}.scan-box .bc::before,.scan-box .bc::after{content:'';position:absolute;width:40px;height:40px;border-color:#22c55e;border-style:solid}.scan-box .bc::before{bottom:0;left:0;border-width:0 0 4px 4px}.scan-box .bc::after{bottom:0;right:0;border-width:0 4px 4px 0}.scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#22c55e,transparent);animation:scanline 2s ease-in-out infinite}@keyframes scanline{0%,100%{top:0}50%{top:100%}}.scan-hint{position:absolute;bottom:12px;left:0;right:0;text-align:center}.spinner{display:inline-block;width:20px;height:20px;border:3px solid #16a34a;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.prod-img{width:60px;height:60px;border-radius:12px;object-fit:cover;background:#f9fafb}.prod-img-lg{width:90px;height:90px;border-radius:16px;object-fit:contain;background:white;padding:4px;border:1px solid #f3f4f6}
+</style>
+</head>
+<body>
+<div id="tw"></div>
+<div class="flex flex-col min-h-screen">
+<header class="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-50">
+<div class="flex items-center justify-between max-w-lg mx-auto">
+<div class="flex items-center gap-2.5"><span style="font-size:28px">🥫</span><div><h1 class="font-bold text-gray-900 text-sm">Vorratsverwaltung</h1><p class="text-xs text-gray-400">Auto-Erkennung · Lokal gespeichert</p></div></div>
+<button onclick="showAlerts()" class="relative w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center"><span style="font-size:20px">🔔</span><span id="adot" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span></button>
+</div></header>
+<main class="flex-1 pb-20 max-w-lg mx-auto w-full">
+
+<div id="t-dash" class="tab active p-4 space-y-4">
+<div><h2 class="text-xl font-bold text-gray-900">Dashboard</h2><p id="greet" class="text-sm text-gray-400"></p></div>
+<div class="grid grid-cols-2 gap-3">
+<div class="sc2" style="background:#eff6ff"><p class="text-xs font-bold text-blue-500 uppercase">Produkte</p><p class="text-3xl font-black text-blue-700 mt-1" id="s1">0</p></div>
+<div class="sc2" style="background:#fefce8"><p class="text-xs font-bold text-yellow-600 uppercase">Bald ablaufend</p><p class="text-3xl font-black text-yellow-700 mt-1" id="s2">0</p></div>
+<div class="sc2" style="background:#fef2f2"><p class="text-xs font-bold text-red-500 uppercase">Abgelaufen</p><p class="text-3xl font-black text-red-700 mt-1" id="s3">0</p></div>
+<div class="sc2" style="background:#f0fdf4"><p class="text-xs font-bold text-green-600 uppercase">Einkaufen</p><p class="text-3xl font-black text-green-700 mt-1" id="s4">0</p></div>
+</div>
+<div class="card p-4"><h3 class="font-bold text-gray-900 mb-3">⚠️ Bald ablaufend</h3><div id="d-exp"></div></div>
+<div class="card p-4"><h3 class="font-bold text-gray-900 mb-3">📉 Niedriger Bestand</h3><div id="d-low"></div></div>
+<div class="card p-4"><h3 class="font-bold text-gray-900 mb-3">📋 Aktivitäten</h3><div id="d-act"></div></div>
+</div>
+
+<div id="t-inv" class="tab p-4 space-y-3">
+<div class="flex items-center justify-between"><h2 class="text-xl font-bold text-gray-900">Vorrat</h2><button onclick="oM('m-add')" class="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-bold">➕ Neu</button></div>
+<div class="relative"><span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">🔍</span><input id="iq" type="text" oninput="rP()" class="inp pl-9 pr-9" placeholder="Suchen..."/><button id="iqc" onclick="iCl()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">✕</button></div>
+<div id="lf" class="flex gap-2 overflow-x-auto pb-1"></div>
+<div id="cf" class="flex gap-2 overflow-x-auto pb-1"></div>
+<div id="pl"></div>
+</div>
+
+<div id="t-scan" class="tab p-4 space-y-4">
+<div><h2 class="text-xl font-bold text-gray-900">Scanner</h2><p class="text-sm text-gray-400">Automatische Produkt-Erkennung 🌍</p></div>
+<div class="flex gap-1 bg-gray-100 p-1 rounded-xl">
+<button class="sa flex-1 py-2 rounded-lg text-xs font-bold bg-white text-green-600 shadow-sm" data-a="add" onclick="setSA(this)">➕ Einlagern</button>
+<button class="sa flex-1 py-2 rounded-lg text-xs font-bold text-gray-500" data-a="remove" onclick="setSA(this)">➖ Entnehmen</button>
+</div>
+<div id="cam-wrap" class="scan-area hidden">
+<video id="cam" muted playsinline autoplay></video>
+<div class="scan-overlay"><div class="scan-box"><div class="bc"></div><div class="scan-line"></div></div></div>
+<div class="scan-hint"><span class="text-white text-xs bg-black/60 px-3 py-1.5 rounded-full">Barcode in den Rahmen halten</span></div>
+</div>
+<div id="cam-btns"><button onclick="startCam()" class="bg flex items-center justify-center gap-2"><span style="font-size:20px">📷</span> Kamera-Scanner starten</button></div>
+<div id="cam-controls" class="hidden flex gap-2">
+<button id="stop-btn" onclick="stopCam()" class="br flex-1">⏹ Stoppen</button>
+<button id="torch-btn" onclick="toggleTorch()" class="hidden flex-1 py-3 rounded-xl font-bold text-sm bg-gray-800 text-white border-2 border-gray-700">💡 Licht AN</button>
+</div>
+<div class="card p-4"><p class="lbl mb-2">✏️ Barcode manuell eingeben</p>
+<div class="flex gap-2"><input id="mbc" type="number" class="inp flex-1" placeholder="z.B. 4006381333931" inputmode="numeric" onkeydown="if(event.key==='Enter')mScan()"/><button onclick="mScan()" class="bg-green-600 text-white px-4 rounded-xl font-bold text-sm">Suchen</button></div></div>
+<div id="sr-loading" class="hidden card p-6 text-center fade"><div class="spinner mx-auto mb-3"></div><p class="text-sm font-bold text-gray-700">Produkt wird gesucht...</p><p class="text-xs text-gray-400 mt-1">Open Food Facts Datenbank</p></div>
+<div id="sr-new" class="hidden card p-4 space-y-4 fade">
+<div class="text-center"><span class="badge cb">🌍 Aus Datenbank erkannt</span></div>
+<div class="flex items-start gap-3"><img id="srn-img" class="prod-img-lg" alt=""/><div class="flex-1 min-w-0"><h3 id="srn-name" class="font-bold text-gray-900 text-sm leading-tight">–</h3><p id="srn-brand" class="text-xs text-gray-500 mt-0.5">–</p><p id="srn-qty" class="text-xs text-gray-400 mt-1">–</p></div></div>
+<div class="bg-blue-50 rounded-xl p-3"><p class="text-xs text-blue-700 font-semibold">📦 Produkt zum Vorrat hinzufügen?</p></div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Menge</label><input id="srn-amount" type="number" value="1" min="0.1" step="0.5" class="inp"/></div>
+<div><label class="lbl">Lagerort</label><select id="srn-loc" class="sel"></select></div>
+<div><label class="lbl">Kategorie</label><select id="srn-cat" class="sel"></select></div>
+<div><label class="lbl">MHD</label><input id="srn-mhd" type="date" class="inp"/></div>
+</div>
+<div class="flex gap-2"><button onclick="rScan()" class="bw flex-1">↩ Abbrechen</button><button onclick="saveFromAPI()" class="bg flex-1">✅ Hinzufügen</button></div>
+</div>
+<div id="sr" class="hidden card p-4 space-y-4 fade">
+<div class="flex items-center gap-3"><img id="sri" class="prod-img" alt=""/><div class="flex-1"><h3 id="srn2" class="font-bold text-gray-900">–</h3><p id="srs" class="text-sm text-gray-400">–</p></div></div>
+<div class="flex items-center justify-center gap-5"><button onclick="aSQ(-1)" class="w-12 h-12 rounded-full bg-gray-100 text-2xl font-bold">−</button><span id="srq" class="text-3xl font-black w-14 text-center">1</span><button onclick="aSQ(1)" class="w-12 h-12 rounded-full bg-gray-100 text-2xl font-bold">+</button></div>
+<div id="smr" class="hidden"><label class="lbl">MHD (optional)</label><input id="smhd" type="date" class="inp"/></div>
+<div class="flex gap-2"><button onclick="rScan()" class="bw flex-1">↩ Zurück</button><button onclick="cScan()" class="bg flex-1">✅ Bestätigen</button></div>
+</div>
+<div id="sr-notfound" class="hidden card p-4 space-y-3 fade">
+<div class="text-center py-3"><div style="font-size:48px">🔍</div><h3 class="font-bold text-gray-900 mt-2">Produkt nicht gefunden</h3><p class="text-xs text-gray-400 mt-1">Barcode: <span id="srnf-bc" class="font-mono"></span></p></div>
+<button onclick="manualAdd()" class="bg">📝 Manuell anlegen</button><button onclick="rScan()" class="bw">↩ Zurück</button>
+</div>
+</div>
+
+<div id="t-shop" class="tab p-4 space-y-4">
+<div class="flex items-center justify-between"><h2 class="text-xl font-bold text-gray-900">Einkaufsliste</h2><button onclick="shrList()" class="text-green-600 text-sm font-bold px-3 py-2 rounded-xl hover:bg-green-50">📤 Teilen</button></div>
+<div class="card p-4"><div class="flex gap-2"><input id="shn" type="text" class="inp flex-1" placeholder="Artikel hinzufügen..." onkeydown="if(event.key==='Enter')addSh()"/><input id="shq" type="number" value="1" min="1" class="inp w-16 text-center"/><button onclick="addSh()" class="bg-green-600 text-white w-12 rounded-xl text-2xl font-bold flex items-center justify-center shrink-0">+</button></div></div>
+<div id="she" class="text-center py-10 text-gray-400"><div style="font-size:48px">🛒</div><p class="text-sm mt-2 font-semibold">Einkaufsliste ist leer</p></div>
+<div id="sho"></div>
+<div id="shd-w" class="hidden"><div class="flex items-center justify-between px-1 mb-2"><p id="shdl" class="text-sm font-semibold text-gray-400"></p><button onclick="clrDone()" class="text-xs text-red-400 font-semibold">Alle löschen</button></div><div id="shd"></div></div>
+</div>
+
+<div id="t-set" class="tab p-4 space-y-4 pb-8">
+<h2 class="text-xl font-bold text-gray-900">Einstellungen</h2>
+<div class="card p-4"><div class="flex items-center justify-between mb-3"><p class="lbl mb-0">🏷 Kategorien</p><button onclick="oM('m-cat')" class="text-green-600 text-sm font-bold">+ Neu</button></div><div id="cl" class="space-y-2"></div></div>
+<div class="card p-4"><div class="flex items-center justify-between mb-3"><p class="lbl mb-0">📍 Lagerorte</p><button onclick="oM('m-loc')" class="text-green-600 text-sm font-bold">+ Neu</button></div><div id="ll" class="space-y-2"></div></div>
+<div class="card p-4"><p class="lbl mb-3">📊 Statistiken</p><div id="sts" class="space-y-2"></div></div>
+<div class="card p-4 space-y-3"><p class="lbl mb-0">💾 Daten</p><button onclick="expD()" class="bw">📤 Export</button><label class="bw cursor-pointer text-center block">📥 Import<input type="file" accept=".json" onchange="impD(event)" class="hidden"/></label><button onclick="clrAll()" class="br">🗑 Alle Daten löschen</button></div>
+<p class="text-center text-xs text-gray-300">v3.0 · Open Food Facts API · Keine Cloud</p>
+</div>
+
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50" style="padding-bottom:env(safe-area-inset-bottom)">
+<div class="flex items-center justify-around max-w-lg mx-auto" style="height:64px">
+<button class="ni active" data-tab="dash" onclick="gT('dash')"><span style="font-size:20px">📊</span><span style="font-size:10px;font-weight:600">Dashboard</span></button>
+<button class="ni" data-tab="inv" onclick="gT('inv')"><span style="font-size:20px">📦</span><span style="font-size:10px;font-weight:600">Vorrat</span></button>
+<button data-tab="scan" onclick="gT('scan')" style="display:flex;flex-direction:column;align-items:center;border:none;background:none;cursor:pointer;padding:0"><div style="width:56px;height:56px;background:#16a34a;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-top:-20px;box-shadow:0 4px 14px rgba(22,163,74,.4);font-size:26px">📷</div></button>
+<button class="ni" data-tab="shop" onclick="gT('shop')"><span style="font-size:20px">🛒</span><span style="font-size:10px;font-weight:600">Einkauf</span></button>
+<button class="ni" data-tab="set" onclick="gT('set')"><span style="font-size:20px">⚙️</span><span style="font-size:10px;font-weight:600">Einstellungen</span></button>
+</div></nav>
+</div>
+
+<!-- MODALS -->
+<div id="m-add" class="mo"><div class="mb">
+<div class="sticky top-0 bg-white rounded-t-3xl flex items-center justify-between p-5 border-b border-gray-100"><h3 class="font-black text-lg">➕ Produkt hinzufügen</h3><button onclick="cM('m-add')" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500">✕</button></div>
+<div class="p-5 space-y-4">
+<div><label class="lbl">Produktname *</label><input id="pn" type="text" class="inp" placeholder="z.B. Tomatensoße"/></div>
+<div><label class="lbl">Barcode</label><input id="pb" type="text" class="inp font-mono" placeholder="Optional"/></div>
+<div><label class="lbl">Bild-URL</label><input id="pimg" type="text" class="inp" placeholder="https://..."/></div>
+<div class="grid grid-cols-2 gap-3">
+<div><label class="lbl">Kategorie</label><select id="pc" class="sel"></select></div>
+<div><label class="lbl">Lagerort</label><select id="ploc" class="sel"></select></div>
+<div><label class="lbl">Einheit</label><select id="pu" class="sel"><option>Stück</option><option>Liter</option><option>ml</option><option>kg</option><option>g</option><option>Packung</option><option>Flasche</option><option>Dose</option><option>Glas</option></select></div>
+<div><label class="lbl">Mindestbestand</label><input id="pm" type="number" value="0" min="0" step="0.5" class="inp"/></div>
+<div><label class="lbl">Anfangsmenge</label><input id="pq" type="number" value="1" min="0" step="0.5" class="inp"/></div>
+<div><label class="lbl">MHD</label><input id="pd" type="date" class="inp"/></div>
+</div>
+<div><label class="lbl">Notizen</label><textarea id="pno" rows="2" class="inp resize-none" placeholder="Optional..."></textarea></div>
+<div class="flex gap-3 pb-2"><button onclick="cM('m-add')" class="bw flex-1">Abbrechen</button><button onclick="svP()" class="bg flex-1">✅ Speichern</button></div>
+</div></div></div>
+
+<div id="m-det" class="mo"><div class="mb">
+<div class="sticky top-0 bg-white rounded-t-3xl flex items-center justify-between p-5 border-b border-gray-100">
+<div class="flex items-center gap-3"><img id="di-img" class="prod-img" alt="" style="display:none"/><span id="di-icon" style="font-size:30px">📦</span><div><h3 id="dn" class="font-black text-gray-900">–</h3><p id="ds" class="text-xs text-gray-400">–</p></div></div>
+<button onclick="cM('m-det')" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500">✕</button></div>
+<div class="p-5 space-y-4">
+<div id="dsc" class="rounded-2xl p-4 bg-green-50"><p class="text-xs text-gray-500 font-semibold">Gesamtbestand</p><p id="dq" class="text-4xl font-black text-green-600 mt-1">–</p><p id="dmn" class="text-xs text-gray-400 mt-1">–</p></div>
+<div class="flex bg-gray-100 rounded-xl p-1"><button onclick="dTab('b')" id="dtb" class="flex-1 py-2 rounded-lg text-sm font-bold bg-white text-green-600 shadow-sm">Chargen</button><button onclick="dTab('i')" id="dti2" class="flex-1 py-2 rounded-lg text-sm font-bold text-gray-500">Details</button></div>
+<div id="dbt" class="space-y-3"></div>
+<div id="dit" class="hidden">
+<div class="flex justify-between py-3 border-b border-gray-50"><span class="text-sm text-gray-400">Barcode</span><span id="dbc" class="text-sm font-bold font-mono">–</span></div>
+<div class="flex justify-between py-3 border-b border-gray-50"><span class="text-sm text-gray-400">Einheit</span><span id="du" class="text-sm font-bold">–</span></div>
+<div class="flex justify-between py-3 border-b border-gray-50"><span class="text-sm text-gray-400">Kategorie</span><span id="dca" class="text-sm font-bold">–</span></div>
+<div class="flex justify-between py-3 border-b border-gray-50"><span class="text-sm text-gray-400">Lagerort</span><span id="dlo" class="text-sm font-bold">–</span></div>
+<div class="flex justify-between py-3 border-b border-gray-50"><span class="text-sm text-gray-400">Mindestbestand</span><span id="dmi" class="text-sm font-bold">–</span></div>
+<div class="flex justify-between py-3"><span class="text-sm text-gray-400">Notizen</span><span id="dno2" class="text-sm font-bold text-right max-w-48">–</span></div>
+<div class="pt-4 space-y-3"><p class="lbl">✏️ Bearbeiten</p><div class="grid grid-cols-2 gap-2"><div><label class="lbl">Name</label><input id="en" type="text" class="inp"/></div><div><label class="lbl">Mindestbestand</label><input id="em" type="number" step="0.5" class="inp"/></div><div><label class="lbl">Kategorie</label><select id="ec" class="sel"></select></div><div><label class="lbl">Lagerort</label><select id="el" class="sel"></select></div></div><button onclick="eProd()" class="bg">💾 Speichern</button></div>
+<button onclick="aProd()" class="br mt-3">🗑 Löschen</button>
+</div>
+<button id="dab" onclick="oB()" class="w-full py-3 border-2 border-dashed border-green-300 text-green-600 rounded-xl text-sm font-bold hover:bg-green-50">➕ Neue Charge</button>
+</div></div></div>
+
+<div id="m-bat" class="mo"><div class="mb">
+<div class="sticky top-0 bg-white rounded-t-3xl flex items-center justify-between p-5 border-b border-gray-100"><h3 class="font-black text-lg">🗃 Neue Charge</h3><button onclick="cM('m-bat')" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500">✕</button></div>
+<div class="p-5 space-y-4"><div class="grid grid-cols-2 gap-3"><div><label class="lbl">Menge *</label><input id="bq" type="number" value="1" min="0.1" step="0.5" class="inp"/></div><div><label class="lbl">Lagerort</label><select id="bl" class="sel"></select></div><div><label class="lbl">MHD</label><input id="bd" type="date" class="inp"/></div><div><label class="lbl">Kaufdatum</label><input id="bk" type="date" class="inp"/></div><div><label class="lbl">Preis (€)</label><input id="bp" type="number" step="0.01" placeholder="0.00" class="inp"/></div><div><label class="lbl">Notiz</label><input id="bn" type="text" placeholder="Optional" class="inp"/></div></div>
+<div class="flex gap-3 pb-2"><button onclick="cM('m-bat')" class="bw flex-1">Abbrechen</button><button onclick="svB()" class="bg flex-1">✅ Hinzufügen</button></div></div></div></div>
+
+<div id="m-cat" class="mo"><div class="mb"><div class="sticky top-0 bg-white rounded-t-3xl flex items-center justify-between p-5 border-b border-gray-100"><h3 class="font-black text-lg">🏷 Neue Kategorie</h3><button onclick="cM('m-cat')" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500">✕</button></div><div class="p-5 space-y-4"><div><label class="lbl">Name *</label><input id="catn" type="text" class="inp" placeholder="z.B. Getränke"/></div><div><label class="lbl">Emoji</label><input id="cati" type="text" class="inp text-2xl" placeholder="🥤" maxlength="2"/></div><div class="flex gap-3 pb-2"><button onclick="cM('m-cat')" class="bw flex-1">Abbrechen</button><button onclick="svC()" class="bg flex-1">✅ Speichern</button></div></div></div></div>
+
+<div id="m-loc" class="mo"><div class="mb"><div class="sticky top-0 bg-white rounded-t-3xl flex items-center justify-between p-5 border-b border-gray-100"><h3 class="font-black text-lg">📍 Neuer Lagerort</h3><button onclick="cM('m-loc')" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500">✕</button></div><div class="p-5 space-y-4"><div><label class="lbl">Name *</label><input id="locn" type="text" class="inp" placeholder="z.B. Keller"/></div><div><label class="lbl">Emoji</label><input id="loci" type="text" class="inp text-2xl" placeholder="🏚️" maxlength="2"/></div><div class="flex gap-3 pb-2"><button onclick="cM('m-loc')" class="bw flex-1">Abbrechen</button><button onclick="svL()" class="bg flex-1">✅ Speichern</button></div></div></div></div>
+<script>
+const DB={g:(k,d=[])=>{try{return JSON.parse(localStorage.getItem('vv_'+k))??d}catch{return d}},s:(k,v)=>localStorage.setItem('vv_'+k,JSON.stringify(v))};
+let LF=null,CF=null,SA='add',SQ=1,SP=null,CS=null,CAM=null,DEC=null,API_PROD=null,LAST_BC=null,TORCH=false;
+
+function init(){if(!DB.g('init',false)){DB.s('cats',[{id:u(),name:'Getränke',icon:'🥤'},{id:u(),name:'Konserven',icon:'🥫'},{id:u(),name:'Nudeln & Reis',icon:'🍝'},{id:u(),name:'Backwaren',icon:'🍞'},{id:u(),name:'Milchprodukte',icon:'🧀'},{id:u(),name:'Fleisch & Fisch',icon:'🥩'},{id:u(),name:'Gemüse & Obst',icon:'🥦'},{id:u(),name:'Tiefkühlkost',icon:'🧊'},{id:u(),name:'Sonstiges',icon:'📦'}]);DB.s('locs',[{id:u(),name:'Küche',icon:'🍳'},{id:u(),name:'Keller',icon:'🏚️'},{id:u(),name:'Kühlschrank',icon:'❄️'},{id:u(),name:'Gefrierschrank',icon:'🧊'},{id:u(),name:'Vorratsraum',icon:'📦'}]);DB.s('prods',[]);DB.s('bats',[]);DB.s('shop',[]);DB.s('log',[]);DB.s('init',true);}rAll();}
+function rAll(){greet();rLF();rCF();rP();rSh();rD();rSet();}
+function gT(id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('t-'+id).classList.add('active');document.querySelectorAll('.ni').forEach(n=>n.classList.toggle('active',n.dataset.tab===id));if(id!=='scan')stopCam();if(id==='dash')rD();if(id==='set')rSet();}
+function greet(){const h=new Date().getHours();document.getElementById('greet').textContent=h<12?'Guten Morgen ☀️':h<18?'Guten Tag 
+
+function setSA(btn){SA=btn.dataset.a;document.querySelectorAll('.sa').forEach(b=>b.className=`sa flex-1 py-2 rounded-lg text-xs font-bold ${b===btn?'bg-white text-green-600 shadow-sm':'text-gray-500'}`);const smr=document.getElementById('smr');if(smr)smr.classList.toggle('hidden',SA!=='add');}
+function mScan(){const c=V('mbc');if(!c)return toast('Bitte Barcode eingeben');document.getElementById('mbc').value='';hBC(c);}
+let H5Q=null;
+
+async function startCam(){
+  try{
+    // Lade html5-qrcode falls nötig
+    if(!window.Html5Qrcode){
+      toast('📦 Scanner wird geladen...');
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+        s.onload=res;
+        s.onerror=rej;
+        document.head.appendChild(s);
+      });
+    }
+
+    document.getElementById('cam-wrap').classList.remove('hidden');
+    document.getElementById('cam-btns').classList.add('hidden');
+    document.getElementById('cam-controls').classList.remove('hidden');
+    document.getElementById('stop-btn').classList.remove('hidden');
+
+    // Verstecke das alte video element und nutze Container für html5-qrcode
+    const wrap = document.getElementById('cam-wrap');
+    wrap.innerHTML = `<div id="qr-reader" style="width:100%;height:100%"></div>
+      <div class="scan-overlay" style="pointer-events:none">
+        <div class="scan-box"><div class="bc"></div><div class="scan-line"></div></div>
+      </div>
+      <div class="scan-hint" style="pointer-events:none">
+        <span class="text-white text-xs bg-black/60 px-3 py-1.5 rounded-full">Barcode in den Rahmen halten</span>
+      </div>`;
+
+    H5Q = new Html5Qrcode("qr-reader");
+
+    const config = {
+      fps: 10,
+      qrbox: { width: 250, height: 150 },
+      aspectRatio: 1.0,
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.ITF,
+      ],
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: true
+      }
+    };
+
+    await H5Q.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText) => {
+        if(navigator.vibrate) navigator.vibrate(200);
+        toast('🎯 Erkannt: ' + decodedText);
+        stopCam();
+        hBC(decodedText);
+      },
+      () => {} // Fehler ignorieren (passiert ständig wenn kein Code im Bild)
+    );
+
+    // Prüfe ob Torch verfügbar nach Start
+    setTimeout(async () => {
+      try {
+        const caps = H5Q.getRunningTrackCameraCapabilities();
+        if(caps && caps.torchFeature && caps.torchFeature().isSupported()){
+          document.getElementById('torch-btn').classList.remove('hidden');
+        }
+      } catch(e){}
+    }, 1000);
+
+  } catch(err) {
+    console.error(err);
+    if(location.protocol === 'file:')
+      toast('⚠️ Kamera funktioniert nicht über file:// – Nutze localhost:8080!');
+    else if(err.toString().includes('NotAllowed'))
+      toast('❌ Kamera-Berechtigung verweigert!');
+    else
+      toast('❌ Kamera-Fehler: ' + err.message);
+    document.getElementById('cam-wrap').classList.add('hidden');
+    document.getElementById('cam-btns').classList.remove('hidden');
+    document.getElementById('cam-controls').classList.add('hidden');
+  }
+}
+
+async function toggleTorch(){
+  if(!H5Q) return;
+  TORCH = !TORCH;
+  try {
+    const caps = H5Q.getRunningTrackCameraCapabilities();
+    await caps.torchFeature().apply(TORCH);
+    const btn = document.getElementById('torch-btn');
+    btn.textContent = TORCH ? '🔦 Licht AUS' : '💡 Licht AN';
+    btn.className = TORCH
+      ? 'flex-1 py-3 rounded-xl font-bold text-sm bg-yellow-400 text-yellow-900 border-2 border-yellow-500'
+      : 'flex-1 py-3 rounded-xl font-bold text-sm bg-gray-800 text-white border-2 border-gray-700';
+  } catch(e) {
+    toast('❌ Blitz nicht verfügbar');
+  }
+}
+
+async function stopCam(){
+  TORCH = false;
+  if(H5Q){
+    try { await H5Q.stop(); await H5Q.clear(); } catch(e){}
+    H5Q = null;
+  }
+  document.getElementById('cam-wrap').classList.add('hidden');
+  document.getElementById('cam-btns').classList.remove('hidden');
+  document.getElementById('cam-controls').classList.add('hidden');
+  document.getElementById('torch-btn').classList.add('hidden');
+}
+// OPEN FOOD FACTS API
+async function lookupProduct(bc){try{const res=await fetch(`https://world.openfoodfacts.org/api/v2/product/${bc}.json`);const data=await res.json();if(data.status===1&&data.product){const p=data.product;return{name:p.product_name_de||p.product_name||p.generic_name_de||p.generic_name||'Unbekannt',brand:p.brands||'',image:p.image_front_url||p.image_front_small_url||p.image_url||'',quantity:p.quantity||'',category:detectCat(p.categories_tags||[])}}return null;}catch(e){return null;}}
+function detectCat(tags){const cats=DB.g('cats');const map={beverages:'Getränke',sodas:'Getränke',waters:'Getränke',juices:'Getränke',milks:'Getränke',dairies:'Milchprodukte',cheeses:'Milchprodukte',yogurts:'Milchprodukte',meats:'Fleisch & Fisch',fishes:'Fleisch & Fisch',breads:'Backwaren',breakfasts:'Backwaren',cereals:'Backwaren',frozen:'Tiefkühlkost',pastas:'Nudeln & Reis',rices:'Nudeln & Reis',canned:'Konserven',preserves:'Konserven',fruits:'Gemüse & Obst',vegetables:'Gemüse & Obst'};for(const tag of tags){for(const key in map){if(tag.includes(key)){const f=cats.find(c=>c.name===map[key]);if(f)return f.id;}}}return cats.find(c=>c.name==='Sonstiges')?.id||null;}
+
+// BARCODE-HANDLER MIT AUTO-ERKENNUNG + BILD
+async function hBC(code){LAST_BC=code;rScan();const prod=DB.g('prods').find(p=>p.bc===code);if(prod){if(!prod.img){const api=await lookupProduct(code);if(api&&api.image){const prods=DB.g('prods');const p=prods.find(x=>x.id===prod.id);if(p){p.img=api.image;DB.s('prods',prods);prod.img=api.image;}}}SP=prod;SQ=1;const img=document.getElementById('sri');if(prod.img){img.src=prod.img;img.style.display='block';}else{img.src='';img.style.display='none';}sT('srn2',prod.name);sT('srs','Bestand: '+cQ(prod.id)+' '+prod.unit);sT('srq',SQ);const smr=document.getElementById('smr');if(smr)smr.classList.toggle('hidden',SA!=='add');document.getElementById('smhd').value='';document.getElementById('sr').classList.remove('hidden');return;}if(SA==='remove'){toast('❌ Produkt nicht im Vorrat');return;}document.getElementById('sr-loading').classList.remove('hidden');const apiData=await lookupProduct(code);document.getElementById('sr-loading').classList.add('hidden');if(apiData){API_PROD={...apiData,barcode:code};const img=document.getElementById('srn-img');if(apiData.image){img.src=apiData.image;img.style.display='block';}else{img.src='';img.style.display='none';}sT('srn-name',apiData.name+(apiData.brand?' ('+apiData.brand+')':''));sT('srn-brand',apiData.brand||'Keine Marke');sT('srn-qty',apiData.quantity||'');document.getElementById('srn-amount').value='1';document.getElementById('srn-mhd').value='';fSel();if(apiData.category)document.getElementById('srn-cat').value=apiData.category;document.getElementById('sr-new').classList.remove('hidden');}else{sT('srnf-bc',code);document.getElementById('sr-notfound').classList.remove('hidden');}}
+
+function manualAdd(){document.getElementById('pb').value=LAST_BC||'';rScan();oM('m-add');}
+async function saveFromAPI(){if(!API_PROD)return;const amount=+V('srn-amount')||1;const catId=V('srn-cat')||DB.g('cats').find(c=>c.name==='Sonstiges')?.id||null;const locId=V('srn-loc')||null;let unit='Stück';const q=(API_PROD.quantity||'').toLowerCase();if(q.includes('ml'))unit='ml';else if(q.includes('l'))unit='Liter';else if(q.includes('kg'))unit='kg';else if(q.includes('g'))unit='g';const id=u();const name=API_PROD.name+(API_PROD.brand?' ('+API_PROD.brand+')':'');const prods=DB.g('prods');prods.push({id,name,bc:API_PROD.barcode,img:API_PROD.image||null,cat:catId,loc:locId,unit,min:0,notes:API_PROD.quantity||null,ts:Date.now()});DB.s('prods',prods);const b=DB.g('bats');b.push({id:u(),pid:id,q:amount,oq:amount,m:V('srn-mhd')||null,loc:locId,k:td(),c:false,ts:Date.now()});DB.s('bats',b);aLog('created',name);toast('✅ '+API_PROD.name+' hinzugefügt!');rScan();rAll();}
+
+function aSQ(d){SQ=Math.max(1,SQ+d);sT('srq',SQ);}
+function rScan(){SP=null;SQ=1;API_PROD=null;['sr','sr-new','sr-loading','sr-notfound'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('mbc').value='';}
+function cScan(){if(!SP)return;if(SA==='add'){const b=DB.g('bats');b.push({id:u(),pid:SP.id,q:SQ,oq:SQ,m:V('smhd')||null,loc:SP.loc||null,k:td(),c:false,ts:Date.now()});DB.s('bats',b);aLog('added',SP.name);toast(`✅ ${SQ}× ${SP.name} eingelagert`);}else{const b=DB.g('bats');const av=b.filter(x=>x.pid===SP.id&&!x.c&&x.q>0).sort((a,x)=>{if(a.m&&x.m)return ts(a.m)-ts(x.m);if(a.m)return-1;if(x.m)return 1;return a.ts-x.ts;});let r=SQ;for(const x of av){if(r<=0)break;const t=Math.min(r,x.q);r-=t;x.q-=t;if(x.q===0)x.c=true;}DB.s('bats',b);aLog('removed',SP.name);toast(`✅ ${SQ}× ${SP.name} entnommen`);}rScan();rAll();}
+
+// DASHBOARD
+function cQ(pid){return DB.g('bats').filter(b=>b.pid===pid&&!b.c).reduce((s,b)=>s+b.q,0);}
+function rD(){const prods=DB.g('prods'),bats=DB.g('bats').filter(b=>!b.c&&b.q>0),shop=DB.g('shop',[]);const now=Date.now(),d7=now+7*864e5,d30=now+30*864e5;const exp=bats.filter(b=>b.m&&ts(b.m)>=now&&ts(b.m)<=d7).length;const dead=bats.filter(b=>b.m&&ts(b.m)<now).length;const shOpen=shop.filter(i=>!i.done).length;['s1','s2','s3','s4'].forEach((id,i)=>sT(id,[prods.length,exp,dead,shOpen][i]));if(exp+dead>0)document.getElementById('adot').classList.remove('hidden');else document.getElementById('adot').classList.add('hidden');const eL=bats.filter(b=>b.m&&ts(b.m)<=d30).sort((a,b)=>ts(a.m)-ts(b.m)).slice(0,6);document.getElementById('d-exp').innerHTML=eL.length?eL.map(b=>{const p=prods.find(x=>x.id===b.pid),days=Math.ceil((ts(b.m)-now)/864e5);const[c,l]=days<0?['cr','Abgelaufen']:days===0?['co','Heute!']:days<=3?['co',days+'d']:days<=7?['cy',days+'d']:['cgr',days+'d'];return`<div class="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0"><div class="flex items-center gap-2">${p?.img?`<img src="${p.img}" class="w-8 h-8 rounded object-cover"/>`:''}<div><p class="font-bold text-sm text-gray-900">${p?.name||'?'}</p><p class="text-xs text-gray-400">${b.q} ${p?.unit||'Stück'}</p></div></div><span class="badge ${c}">${l}</span></div>`;}).join(''):'<p class="text-sm text-gray-400 text-center py-3">Alles frisch ✅</p>';const lP=prods.filter(p=>p.min>0&&cQ(p.id)<=p.min).slice(0,5);document.getElementById('d-low').innerHTML=lP.length?lP.map(p=>{const cur=cQ(p.id);return`<div class="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0"><div><p class="font-bold text-sm text-gray-900">${p.name}</p><p class="text-xs text-gray-400">${cur} / min. ${p.min} ${p.unit}</p></div><button onclick="qSh('${p.id}','${esc(p.name)}','${p.unit}',${p.min-cur})" class="badge cr cursor-pointer">🛒</button></div>`;}).join(''):'<p class="text-sm text-gray-400 text-center py-3">OK ✅</p>';const logs=DB.g('log',[]).slice(-8).reverse();const IC={added:'➕',removed:'📤',created:'🆕',deleted:'🗑️',batch:'🗃️'};document.getElementById('d-act').innerHTML=logs.length?logs.map(l=>`<div class="flex items-start gap-2.5 py-2.5 border-b border-gray-50 last:border-0"><span style="font-size:20px">${IC[l.type]||'📝'}</span><div><p class="text-sm font-bold text-gray-900">${l.name}</p><p class="text-xs text-gray-400">${ago(l.ts)}</p></div></div>`).join(''):'<p class="text-sm text-gray-400 text-center py-3">Keine Aktivitäten</p>';}
+
+// FILTER & PRODUKTE
+function rLF(){document.getElementById('lf').innerHTML=`<button class="fb fag" data-lid="all" onclick="sLF(null)">🗺 Alle</button>`+DB.g('locs').map(l=>`<button class="fb" data-lid="${l.id}" onclick="sLF('${l.id}')">${l.icon} ${l.name}</button>`).join('');}
+function rCF(){document.getElementById('cf').innerHTML=`<button class="fb fab" data-cid="all" onclick="sCF(null)">🏷 Alle</button>`+DB.g('cats').map(c=>`<button class="fb" data-cid="${c.id}" onclick="sCF('${c.id}')">${c.icon} ${c.name}</button>`).join('');}
+function sLF(id){LF=id;document.querySelectorAll('[data-lid]').forEach(b=>b.className='fb'+((id?b.dataset.lid===id:b.dataset.lid==='all')?' fag':''));rP();}
+function sCF(id){CF=id;document.querySelectorAll('[data-cid]').forEach(b=>b.className='fb'+((id?b.dataset.cid===id:b.dataset.cid==='all')?' fab':''));rP();}
+function iCl(){document.getElementById('iq').value='';document.getElementById('iqc').classList.add('hidden');rP();}
+
+function rP(){const q=document.getElementById('iq').value.toLowerCase().trim();document.getElementById('iqc').classList.toggle('hidden',!q);const cats=DB.g('cats'),locs=DB.g('locs');let prods=DB.g('prods');if(q)prods=prods.filter(p=>p.name.toLowerCase().includes(q)||(p.bc||'').includes(q));if(LF)prods=prods.filter(p=>p.loc===LF);if(CF)prods=prods.filter(p=>p.cat===CF);prods.sort((a,b)=>a.name.localeCompare(b.name,'de'));const el=document.getElementById('pl');if(!prods.length){el.innerHTML=`<div class="text-center py-12 text-gray-400 fade"><div style="font-size:48px">📦</div><p class="font-bold mt-2">${DB.g('prods').length?'Kein Ergebnis':'Noch keine Produkte'}</p><p class="text-sm mt-1">${DB.g('prods').length?'Filter ändern':'Scanne ein Produkt!'}</p></div>`;return;}el.innerHTML=prods.map(p=>{const cur=cQ(p.id),cat=cats.find(c=>c.id===p.cat),loc=locs.find(l=>l.id===p.loc);const isLow=p.min>0&&cur<=p.min;const nb=DB.g('bats').filter(b=>b.pid===p.id&&!b.c&&b.q>0&&b.m).sort((a,b)=>ts(a.m)-ts(b.m))[0];const[ec,el2]=nb?eB(nb.m):['',''];return`<div class="card p-4 cursor-pointer hover:shadow-md mb-3 fade" onclick="oDet('${p.id}')"><div class="flex items-center gap-3">${p.img?`<img src="${p.img}" class="prod-img shrink-0"/>`:`<div class="w-[60px] h-[60px] rounded-xl bg-gray-50 flex items-center justify-center shrink-0" style="font-size:28px">${cat?.icon||'📦'}</div>`}<div class="flex-1 min-w-0"><div class="flex items-center justify-between"><h3 class="font-black text-gray-900 truncate text-sm">${p.name}</h3><span class="text-gray-300 text-xl ml-2">›</span></div><p class="text-xs text-gray-400 mt-0.5">${loc?.name||'–'}${cat?' · '+cat.name:''}</p><div class="flex flex-wrap gap-1.5 mt-2"><span class="badge ${isLow?'cr':'cg'}">${cur} ${p.unit}</span>${nb?`<span class="badge ${ec}">MHD ${fD(nb.m)} ${el2?'('+el2+')':''}</span>`:''}${isLow?'<span class="badge cr">⚠️</span>':''}</div></div></div></div>`;}).join('');}
+
+// MODALS
+function fSel(){const cats=DB.g('cats'),locs=DB.g('locs');['pc','ec','srn-cat'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='<option value="">Keine</option>'+cats.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');});['ploc','bl','el','srn-loc'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='<option value="">Kein Ort</option>'+locs.map(l=>`<option value="${l.id}">${l.icon} ${l.name}</option>`).join('');});}
+function oM(id){fSel();document.getElementById(id).classList.add('active');document.body.style.overflow='hidden';}
+function cM(id){document.getElementById(id).classList.remove('active');document.body.style.overflow='';}
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)cM(m.id);}));
+
+function svP(){const name=V('pn');if(!name)return toast('Bitte Namen eingeben');const prods=DB.g('prods'),id=u(),qty=+V('pq')||0;prods.push({id,name,bc:V('pb')||null,img:V('pimg')||null,cat:V('pc')||null,loc:V('ploc')||null,unit:V('pu')||'Stück',min:+V('pm')||0,notes:V('pno')||null,ts:Date.now()});DB.s('prods',prods);if(qty>0){const b=DB.g('bats');b.push({id:u(),pid:id,q:qty,oq:qty,m:V('pd')||null,loc:V('ploc')||null,k:td(),c:false,ts:Date.now()});DB.s('bats',b);}aLog('created',name);cM('m-add');toast('✅ '+name+' hinzugefügt!');['pn','pb','pno','pd','pimg'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});document.getElementById('pq').value='1';document.getElementById('pm').value='0';rAll();}
+
+function oDet(id){const prods=DB.g('prods');CS=prods.find(p=>p.id===id);if(!CS)return;const cats=DB.g('cats'),locs=DB.g('locs');const cat=cats.find(c=>c.id===CS.cat),loc=locs.find(l=>l.id===CS.loc);const cur=cQ(id),isLow=CS.min>0&&cur<=CS.min;const img=document.getElementById('di-img');const icon=document.getElementById('di-icon');if(CS.img){img.src=CS.img;img.style.display='block';icon.style.display='none';}else{img.style.display='none';icon.style.display='inline';icon.textContent=cat?.icon||'📦';}sT('dn',CS.name);sT('ds',(cat?.name||'–')+' · '+(loc?.name||'–'));document.getElementById('dsc').className=`rounded-2xl p-4 ${isLow?'bg-red-50':'bg-green-50'}`;const dq=document.getElementById('dq');dq.className=`text-4xl font-black mt-1 ${isLow?'text-red-600':'text-green-600'}`;dq.textContent=cur+' '+CS.unit;sT('dmn',CS.min>0?`Min: ${CS.min} ${CS.unit}`:'Kein Mindestbestand');sT('dbc',CS.bc||'–');sT('du',CS.unit);sT('dca',cat?.name||'–');sT('dlo',loc?.name||'–');sT('dmi',CS.min+' '+CS.unit);sT('dno2',CS.notes||'–');document.getElementById('en').value=CS.name;document.getElementById('em').value=CS.min;fSel();document.getElementById('ec').value=CS.cat||'';document.getElementById('el').value=CS.loc||'';dTab('b');oM('m-det');rBats();}
+
+function dTab(t){document.getElementById('dbt').classList.toggle('hidden',t!=='b');document.getElementById('dit').classList.toggle('hidden',t!=='i');document.getElementById('dab').classList.toggle('hidden',t!=='b');['b','i'].forEach(x=>{const e=document.getElementById(x==='b'?'dtb':'dti2');if(e)e.className=`flex-1 py-2 rounded-lg text-sm font-bold ${x===t?'bg-white text-green-600 shadow-sm':'text-gray-500'}`;});}
+
+function rBats(){if(!CS)return;const bats=DB.g('bats').filter(b=>b.pid===CS.id&&!b.c&&b.q>0).sort((a,b)=>{if(a.m&&b.m)return ts(a.m)-ts(b.m);if(a.m)return-1;if(b.m)return 1;return a.ts-b.ts;});const locs=DB.g('locs'),el=document.getElementById('dbt');if(!bats.length){el.innerHTML='<p class="text-center text-gray-400 text-sm py-6">📦 Keine Chargen</p>';return;}el.innerHTML=bats.map((b,i)=>{const loc=locs.find(l=>l.id===b.loc);const days=b.m?Math.ceil((ts(b.m)-Date.now())/864e5):null;const[ec,el2]=b.m?eB(b.m):['cgr',''];return`<div class="bg-gray-50 rounded-2xl p-3.5"><div class="flex items-start justify-between mb-2"><div><span class="text-xs font-bold text-gray-400">Charge ${i+1}</span>${i===0&&b.m?'<span class="badge cb ml-2">FIFO</span>':''}${loc?`<p class="text-xs text-gray-400 mt-0.5">📍 ${loc.name}</p>`:''}</div><button onclick="dBat('${b.id}')" class="text-gray-300 hover:text-red-400 text-xl">🗑</button></div>${b.m?`<div class="mb-2"><span class="badge ${ec}">MHD ${fD(b.m)} ${days!==null?'('+(days<0?'abgelaufen':days===0?'heute':'noch '+days+'d')+')':''}</span></div>`:''}<div class="flex items-center justify-between"><div class="flex items-center gap-3"><button onclick="aB('${b.id}',-1)" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xl font-bold">−</button><span class="font-black text-gray-900 text-center" style="min-width:80px">${b.q} ${CS.unit}</span><button onclick="aB('${b.id}',1)" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xl font-bold">+</button></div>${b.pr?`<span class="text-xs text-gray-400">${(+b.pr).toFixed(2)}€</span>`:''}</div></div>`;}).join('');const cur=cQ(CS.id),isLow=CS.min>0&&cur<=CS.min;document.getElementById('dq').textContent=cur+' '+CS.unit;document.getElementById('dq').className=`text-4xl font-black mt-1 ${isLow?'text-red-600':'text-green-600'}`;document.getElementById('dsc').className=`rounded-2xl p-4 ${isLow?'bg-red-50':'bg-green-50'}`;}
+
+function aB(bid,d){const b=DB.g('bats'),bt=b.find(x=>x.id===bid);if(!bt)return;bt.q=Math.max(0,bt.q+d);if(bt.q===0)bt.c=true;DB.s('bats',b);aLog(d>0?'added':'removed',CS?.name||'?');rBats();rP();rD();}
+function dBat(id){if(!confirm('Charge löschen?'))return;DB.s('bats',DB.g('bats').filter(b=>b.id!==id));toast('🗑');rBats();rP();rD();}
+function aProd(){if(!CS||!confirm(`"${CS.name}" löschen?`))return;DB.s('prods',DB.g('prods').filter(p=>p.id!==CS.id));DB.s('bats',DB.g('bats').filter(b=>b.pid!==CS.id));aLog('deleted',CS.name);cM('m-det');toast('🗑');rAll();}
+function eProd(){if(!CS)return;const nm=V('en');if(!nm)return toast('Name fehlt');const prods=DB.g('prods'),p=prods.find(x=>x.id===CS.id);if(!p)return;p.name=nm;p.min=+V('em')||0;p.cat=V('ec')||null;p.loc=V('el')||null;DB.s('prods',prods);CS=p;toast('✅ Gespeichert');oDet(p.id);rP();rD();}
+function oB(){document.getElementById('bq').value='1';document.getElementById('bd').value='';document.getElementById('bk').value=td();document.getElementById('bp').value='';document.getElementById('bn').value='';fSel();if(CS?.loc)document.getElementById('bl').value=CS.loc;oM('m-bat');}
+function svB(){if(!CS)return;const qty=+V('bq');if(!qty||qty<=0)return toast('Menge fehlt');const b=DB.g('bats');b.push({id:u(),pid:CS.id,q:qty,oq:qty,m:V('bd')||null,loc:V('bl')||null,k:V('bk')||td(),pr:+V('bp')||null,notes:V('bn')||null,c:false,ts:Date.now()});DB.s('bats',b);aLog('batch',CS.name);cM('m-bat');toast('✅ Charge hinzugefügt!');rBats();rP();rD();}
+
+// EINKAUF
+function addSh(){const name=V('shn').trim();if(!name)return;const sh=DB.g('shop',[]);sh.unshift({id:u(),name,qty:+V('shq')||1,unit:'Stück',done:false,auto:false,ts:Date.now()});DB.s('shop',sh);document.getElementById('shn').value='';document.getElementById('shq').value='1';toast('✅');rSh();rD();}
+function qSh(pid,name,unit,qty){const sh=DB.g('shop',[]);sh.unshift({id:u(),name,qty:Math.max(1,Math.ceil(qty)),unit,done:false,auto:true,pid,ts:Date.now()});DB.s('shop',sh);toast('🛒 Hinzugefügt');rSh();rD();}
+function tgSh(id){const sh=DB.g('shop',[]),it=sh.find(i=>i.id===id);if(it){it.done=!it.done;it.dts=it.done?Date.now():null;}DB.s('shop',sh);rSh();rD();}
+function dlSh(id){DB.s('shop',DB.g('shop',[]).filter(i=>i.id!==id));rSh();rD();}
+function clrDone(){if(!confirm('Erledigte löschen?'))return;DB.s('shop',DB.g('shop',[]).filter(i=>!i.done));toast('🗑');rSh();rD();}
+function rSh(){const sh=DB.g('shop',[]),op=sh.filter(i=>!i.done),dn=sh.filter(i=>i.done);document.getElementById('she').classList.toggle('hidden',sh.length>0);const mk=(it,d)=>`<div class="card p-3 flex items-center gap-3 mb-2 ${d?'opacity-60':''} fade"><button onclick="tgSh('${it.id}')" class="w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 text-xs font-black ${d?'bg-green-500 border-green-500 text-white':'border-gray-300'}">${d?'✓':''}</button><div class="flex-1 min-w-0"><span class="font-bold text-sm ${d?'line-through text-gray-400':'text-gray-900'}">${it.name}</span><span class="text-xs text-gray-400 ml-2">${it.qty}×</span>${it.auto?'<span class="badge cb ml-1">Auto</span>':''}</div><button onclick="dlSh('${it.id}')" class="text-gray-300 hover:text-red-400 text-xl">🗑</button></div>`;document.getElementById('sho').innerHTML=op.map(i=>mk(i,false)).join('');document.getElementById('shd').innerHTML=dn.map(i=>mk(i,true)).join('');document.getElementById('shd-w').classList.toggle('hidden',dn.length===0);if(dn.length)sT('shdl',`Erledigt (${dn.length})`);}
+async function shrList(){const op=DB.g('shop',[]).filter(i=>!i.done);if(!op.length)return toast('Leer');const text='🛒 Einkaufsliste:\n\n'+op.map(i=>`• ${i.qty}× ${i.name}`).join('\n');if(navigator.share)await navigator.share({title:'Einkaufsliste',text});else{await navigator.clipboard.writeText(text);toast('📋 Kopiert!');}}
+
+// SETTINGS
+function rSet(){const cats=DB.g('cats'),locs=DB.g('locs'),prods=DB.g('prods'),bats=DB.g('bats').filter(b=>!b.c&&b.q>0);document.getElementById('cl').innerHTML=cats.map(c=>`<div class="flex items-center justify-between py-1"><span class="text-sm font-semibold">${c.icon} ${c.name}</span><button onclick="dCat('${c.id}')" class="text-xs text-red-400 font-semibold">×</button></div>`).join('');document.getElementById('ll').innerHTML=locs.map(l=>`<div class="flex items-center justify-between py-1"><span class="text-sm font-semibold">${l.icon} ${l.name}</span><button onclick="dLoc('${l.id}')" class="text-xs text-red-400 font-semibold">×</button></div>`).join('');const tv=bats.reduce((s,b)=>s+(b.pr||0)*b.q,0);document.getElementById('sts').innerHTML=[['Produkte',prods.length],['Chargen',bats.length],['Warenwert',tv.toFixed(2)+' €'],['Kategorien',cats.length],['Lagerorte',locs.length],['Einkauf offen',DB.g('shop',[]).filter(i=>!i.done).length]].map(([k,v])=>`<div class="flex justify-between py-1.5 border-b border-gray-50 last:border-0"><span class="text-sm text-gray-500">${k}</span><span class="text-sm font-bold">${v}</span></div>`).join('');}
+function svC(){const nm=V('catn');if(!nm)return toast('Name');const c=DB.g('cats');c.push({id:u(),name:nm,icon:V('cati')||'📦'});DB.s('cats',c);cM('m-cat');toast('✅');document.getElementById('catn').value='';document.getElementById('cati').value='';rAll();}
+function svL(){const nm=V('locn');if(!nm)return toast('Name');const l=DB.g('locs');l.push({id:u(),name:nm,icon:V('loci')||'📍'});DB.s('locs',l);cM('m-loc');toast('✅');document.getElementById('locn').value='';document.getElementById('loci').value='';rAll();}
+function dCat(id){if(!confirm('Löschen?'))return;DB.s('cats',DB.g('cats').filter(c=>c.id!==id));toast('🗑');rAll();}
+function dLoc(id){if(!confirm('Löschen?'))return;DB.s('locs',DB.g('locs').filter(l=>l.id!==id));toast('🗑');rAll();}
+function expD(){const data={ex:new Date().toISOString(),v:'3',cats:DB.g('cats'),locs:DB.g('locs'),prods:DB.g('prods'),bats:DB.g('bats'),shop:DB.g('shop',[]),log:DB.g('log',[])};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`vorrat_${td()}.json`;a.click();toast('📤 Export!');}
+function impD(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!confirm('Alle Daten überschreiben?'))return;if(d.cats)DB.s('cats',d.cats);if(d.locs)DB.s('locs',d.locs);if(d.prods)DB.s('prods',d.prods);if(d.bats)DB.s('bats',d.bats);if(d.shop)DB.s('shop',d.shop);if(d.log)DB.s('log',d.log);toast('✅ Import OK!');rAll();}catch{toast('❌ Fehler');}};r.readAsText(f);e.target.value='';}
+function clrAll(){if(!confirm('⚠️ ALLES löschen?'))return;if(!confirm('Sicher?'))return;['cats','locs','prods','bats','shop','log','init'].forEach(k=>localStorage.removeItem('vv_'+k));toast('🗑');init();}
+function showAlerts(){const b=DB.g('bats').filter(x=>!x.c&&x.q>0),now=Date.now();const dead=b.filter(x=>x.m&&ts(x.m)<now).length;const exp=b.filter(x=>x.m&&ts(x.m)>=now&&ts(x.m)<=now+7*864e5).length;const low=DB.g('prods').filter(p=>p.min>0&&cQ(p.id)<=p.min).length;let msg='📊 Status:\n\n';if(dead)msg+=`🔴 ${dead} abgelaufen\n`;if(exp)msg+=`🟡 ${exp} laufen bald ab\n`;if(low)msg+=`📉 ${low} unter Mindestbestand\n`;if(!dead&&!exp&&!low)msg+='✅ Alles OK!';alert(msg);}
+
+// UTILS
+function u(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
+function V(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function sT(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
+function td(){return new Date().toISOString().split('T')[0];}
+function ts(d){return d?new Date(d).getTime():0;}
+function fD(d){if(!d)return'–';return new Date(d).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function ago(t){const s=Math.floor((Date.now()-t)/1000);if(s<60)return'Gerade eben';if(s<3600)return Math.floor(s/60)+' Min.';if(s<86400)return Math.floor(s/3600)+' Std.';return Math.floor(s/86400)+' Tage';}
+function eB(d){const days=Math.ceil((ts(d)-Date.now())/864e5);if(days<0)return['cr','abgelaufen'];if(days===0)return['co','heute!'];if(days<=3)return['co',days+'d'];if(days<=7)return['cy',days+'d'];return['cgr',days+'d'];}
+function esc(s){return(s||'').replace(/'/g,'').replace(/"/g,'');}
+function aLog(type,name){const l=DB.g('log',[]);l.push({id:u(),type,name:esc(name),ts:Date.now()});if(l.length>50)l.splice(0,l.length-50);DB.s('log',l);}
+function toast(msg,ms=3000){const e=document.createElement('div');e.className='ti';e.textContent=msg;document.getElementById('tw').appendChild(e);setTimeout(()=>e.remove(),ms);}
+
+init();
+</script>
+</body>
+</html>
